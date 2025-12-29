@@ -14,34 +14,33 @@ c) En algún caso el valor de x al terminar el programa es 23.
 
 | P1 | P2 | P3 |
 |----|----|----|
-| ```text
+| ```
 If (x = 0) then
   y := 4 * 2;
   x := y + 2;
-``` | ```text
+``` | ```
 If (x > 0) then
   x := x + 1;
-``` | ```text
+``` | ```
 x := (x * 3) + (x * 2) + 1;
 ``` |
 
 ### Respuesta:
 
 **p1:**
-```text
+```
 1- Load y, reg1
 2- Add 2, reg1
 3- Store reg1, x
 p2:
 
-text
 
 4- Load x, reg2
 5- Add 1, reg2
 6- Store reg2, x
 p3:
 
-text
+
 
 7- Load x, reg3
 8- Load x, reg4
