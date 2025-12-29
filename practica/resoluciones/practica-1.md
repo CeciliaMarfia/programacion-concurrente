@@ -14,16 +14,16 @@ c) En algún caso el valor de x al terminar el programa es 23.
 
 | P1 | P2 | P3 |
 |----|----|----|
-| ```
+|
 If (x = 0) then
   y := 4 * 2;
   x := y + 2;
-``` | ```
+| 
 If (x > 0) then
   x := x + 1;
-``` | ```
+ | 
 x := (x * 3) + (x * 2) + 1;
-``` |
+ |
 
 ### Respuesta:
 
