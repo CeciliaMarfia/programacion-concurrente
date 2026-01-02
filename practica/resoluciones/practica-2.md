@@ -599,13 +599,42 @@ Process Armador[id: 0 .. 1] {
 **Enunciado:** 
 A una cerealera van T camiones a descargarse trigo y M camiones a descargar maíz. Sólo hay lugar para que 7 camiones a la vez descarguen, pero no pueden ser más de 5 del mismo tipo de cereal.
 
-a) Implemente una solución que use un proceso extra que actúe como coordinador entre los camiones. El coordinador debe atender a los camiones según el orden de llegada. Además, debe retirarse cuando todos los camiones han descargado. -> NO HACER
+a) Implemente una solución que use un proceso extra que actúe como coordinador entre los camiones. El coordinador debe atender a los camiones según el orden de llegada. Además, debe retirarse cuando todos los camiones han descargado. 
 
 b) Implemente una solución que no use procesos adicionales (sólo camiones). No importa el orden de llegada para descargar. Nota: maximice la concurrencia.
 
 ### Respuesta:
 a)
 ```
+sem libre = 7
+sem tipo [2] = ([2] 5)
+sem paso[N] = ([N] 0)
+sem general = 0
+sem mutex = 1
+cola c;
+
+process camion [id:0..N-1]{
+	int miTipo;
+	P(mutex)
+	c.push(id,tipo)
+	V(mutex)
+	V(general) //aviso que llegué
+	P(paso[id]) //espero el paso
+	descargar()
+	V(libre) //deja lugar
+	V(llegaTipo[miTipo]) //dejo lugar para mi tipo
+
+	process coordinador{
+		for 1 to N
+			P(general) //espero camión
+			P(mutex)
+			c.pop(id,miTipo)
+			v(mutex)
+			P(libre) //espero lugar
+			P(llegaTipo[miTipo]) //espero lugar para mi tipo
+			V(paso[id]) //habilito el paso
+	}
+}
 ```
 
 b)
