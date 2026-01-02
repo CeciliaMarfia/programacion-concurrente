@@ -618,71 +618,72 @@ Monitor Tarea {
 
 **Enunciado:**  
 Se debe simular una maratón con C corredores donde en la llegada hay UNA máquina expendedoras de agua con capacidad para 20 botellas. Además, existe un repositor encargado de reponer las botellas de la máquina. Cuando los C corredores han llegado al inicio comienza la carrera. Cuando un corredor termina la carrera se dirigen a la máquina expendedora, espera su turno (respetando el orden de llegada), saca una botella y se retira. Si encuentra la máquina sin botellas, le avisa al repositor para que cargue nuevamente la máquina con 20 botellas; espera a que se haga la recarga; saca una botella y se retira. Nota: mientras se reponen las botellas se debe permitir que otros corredores se encolen.
-### Respuestas: CORREGIRRRRRRR
+### Respuestas:
 ```
-Process Corredor [id: 0..19] {
-	Carrera.esperarInicio();
-	// Corre
-	// Finaliza la carrera
-	Carrera.accederMaquina(); 
-	Maquina.usar(); 
-	Carrera.dejarMaquina();
+Process Corredor [id: 0..C-1] {
+	Carrera.llegada();
+	// Correr
+	Carrera.usoExpendedora(); 
+	Expendedora.retirarAgua(); 
+	Carrera.retirarse();
 }
 
 Process Repositor {
 	while (true) {
-		Maquina.reponerBotellas();
+		Expendedora.recargar();
     }
 }
 
 Monitor Carrera {
 	bool libre = true;
-	int cantC = 0, esperando = 0;
-	cond cola, comienzoCarrera;
+	int cantEsperando = 0, esperando = 0;
+	cond esperaCorredor,comienzoCarrera;
 
-	Procedure esperarInicio() { 
-		cantC++;
-		if (cantidad == 20) signal_all (comienzoCarrera);
-		else {
+	Procedure llegada() { 
+		cantEsperando++;
+		if (cantEsperando < 20){ 
 			wait (comienzoCarrera);
+		}else {
+			signal_all (comienzoCarrera);
         }   
     }
 
-    Procedure accederMaquina() {
-        if (not libre) {
-            esperando++;
-            wait (cola);
+    Procedure usoExpendedora() {
+        if (not cantEsperando ==0) && (libre) {
+			libre = false;
         } else {
-            libre = false;
+            cantEsperando++;
+            wait (esperaCorredor);
         }
     }
 
-    Procedure dejarMaquina() {
-        if (esperando > 0) {
-            esperando–;
-            signal (cola);
+    Procedure retirarse() {
+        if (cantEsperando > 0) {
+            cantEsperando–;
+            signal (esperaCorredor);
         } else {
             libre = true;
         }
     }
 }
 
-Monitor Maquina () {
+Monitor Expendedora () {
 	int cantBotellas = 20;
-	cond esperaBotella, repositor;
+	cond corredor, noHayAgua;
 
-	Procedure usar() {
-	    if (cantBotellas == 0) &&(libre) {
-           libre = false;
-        }else{
-        esperando - -;
-		wait (esperaBotella);
-    }
+	Procedure retirarAgua() {
+	    if (cantBotellas == 0) {
+        	signal(noHayAgua)
+			wait (corredor);
+		}
+		cantBotellas --;
+	}
 
-    Procedure reponerBotellas() {
-        if (cantBotellas > 0) wait (repositor); 
-        cantBotellas = 20;
-        signal (esperaBotella);
+    Procedure recargar() {
+        if (cantBotellas > 0){ //sino nunca se despierta!
+			wait (noHayAgua); 
+        	cantBotellas = 20;
+        signal (corredor);
     }
 }
 ```
